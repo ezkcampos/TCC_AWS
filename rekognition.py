@@ -1,5 +1,4 @@
 import csv
-from urllib import response
 # biblioteca que se conecta com a AWS
 import boto3
 import openpyxl
@@ -13,7 +12,7 @@ with open('C:/Users/ezequ/Desktop/UNICARIOCA/1TCC/AWS/credentials.csv', 'r') as 
         secret_access_key = line[3]
 
 # Usa a foto
-photo = "C:/Users/ezequ/Desktop/UNICARIOCA/1TCC/AWS/desenho_pessoa2.jpg"
+photo = "C:/Users/ezequ/Desktop/UNICARIOCA/1TCC/AWS/praia.jpg"
 
 # Cria o cliente
 client = boto3.client('rekognition',
@@ -30,8 +29,16 @@ response = client.detect_labels(Image={'Bytes': source_bytes},
                                 MaxLabels=5,
                                 MinConfidence=95)
 
+# Verifica se há rostos na foto
+face_response = client.detect_faces(Image={'Bytes': source_bytes}, Attributes=["ALL"])
+has_face = False
+if len(face_response["FaceDetails"]) > 0:
+    has_face = True
+
+
 # Imprime o resultado
 print(response)
+
 
 # Tenta abrir o arquivo .xlsx, cria um novo se não existir
 try:
@@ -43,18 +50,25 @@ except FileNotFoundError:
     # Escreve os cabeçalhos das colunas
     worksheet.cell(row=1, column=1, value="Label (Rótulo)")
     worksheet.cell(row=1, column=2, value="Confidence (Confiança) em %")
-    worksheet.cell(row=1, column=3, value="Foto")
+    worksheet.cell(row=1, column=3, value="Detecção de rosto")
+    worksheet.cell(row=1, column=4, value="Foto")
 
 # Encontra a última linha com dados na planilha
 last_row = worksheet.max_row
 
+row = worksheet.max_row + 1
 # Adiciona uma nova linha para cada label detectada
 for i, label in enumerate(response["Labels"]):
     worksheet.cell(row=last_row + i + 1, column=1, value=label["Name"])
     worksheet.cell(row=last_row + i + 1, column=2, value=label["Confidence"])
+    worksheet.cell(row=row, column=3, value=has_face)
     photo = photo.split("/")[-1]
-    worksheet.cell(row=last_row + i + 1, column=3, value=photo)
+    worksheet.cell(row=last_row + i + 1, column=4, value=photo)
+    row += 1
+
+
 
 # Salva o arquivo .xlsx
+print("Salvando o arquivo...")
 workbook.save("resultado.xlsx")
 

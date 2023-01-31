@@ -13,7 +13,7 @@ with open('C:/Users/ezequ/Desktop/UNICARIOCA/1TCC/AWS/credentials.csv', 'r') as 
         secret_access_key = line[3]
 
 # Usa a foto
-photo = "C:/Users/ezequ/Desktop/UNICARIOCA/1TCC/AWS/desenho_carro.jpg"
+photo = "C:/Users/ezequ/Desktop/UNICARIOCA/1TCC/AWS/desenho_pessoa2.jpg"
 
 # Cria o cliente
 client = boto3.client('rekognition',
@@ -27,27 +27,34 @@ with open(photo, 'rb') as source_image:
 
 # Usa o cliente para detectar as labels (camadas, o quão longe ele pode se aprofundar no reconhecimento)
 response = client.detect_labels(Image={'Bytes': source_bytes},
-                                MaxLabels=2,
+                                MaxLabels=5,
                                 MinConfidence=95)
 
 # Imprime o resultado
 print(response)
 
-# Cria ou abre o arquivo .xlsx para escrita
-workbook = openpyxl.Workbook()
-worksheet = workbook.active
+# Tenta abrir o arquivo .xlsx, cria um novo se não existir
+try:
+    workbook = openpyxl.load_workbook("resultado.xlsx")
+    worksheet = workbook.active
+except FileNotFoundError:
+    workbook = openpyxl.Workbook()
+    worksheet = workbook.active
+    # Escreve os cabeçalhos das colunas
+    worksheet.cell(row=1, column=1, value="Label (Rótulo)")
+    worksheet.cell(row=1, column=2, value="Confidence (Confiança) em %")
+    worksheet.cell(row=1, column=3, value="Foto")
 
-# Escreve os cabeçalhos das colunas
-worksheet.cell(row=1, column=1, value="Label (Rótulo)")
-worksheet.cell(row=1, column=2, value="Confidence (Confiança) em %")
+# Encontra a última linha com dados na planilha
+last_row = worksheet.max_row
 
-# Percorre as labels detectadas e escreve os resultados na planilha
+# Adiciona uma nova linha para cada label detectada
 for i, label in enumerate(response["Labels"]):
-    worksheet.cell(row=i+2, column=1, value=label["Name"])
-    worksheet.cell(row=i+2, column=2, value=label["Confidence"])
+    worksheet.cell(row=last_row + i + 1, column=1, value=label["Name"])
+    worksheet.cell(row=last_row + i + 1, column=2, value=label["Confidence"])
+    photo = photo.split("/")[-1]
+    worksheet.cell(row=last_row + i + 1, column=3, value=photo)
 
 # Salva o arquivo .xlsx
 workbook.save("resultado.xlsx")
-
-
 

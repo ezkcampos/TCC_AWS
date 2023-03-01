@@ -12,7 +12,8 @@ with open('C:/Users/ezequ/Desktop/UNICARIOCA/1TCC/AWS/credentials.csv', 'r') as 
         secret_access_key = line[3]
 
 # Usa a foto
-photo = "C:/Users/ezequ/Desktop/UNICARIOCA/1TCC/AWS/praia.jpg"
+photo = "C:/Users/ezequ/Desktop/UNICARIOCA/1TCC/AWS/rio.jfif"
+
 
 # Cria o cliente
 client = boto3.client('rekognition',
@@ -26,14 +27,28 @@ with open(photo, 'rb') as source_image:
 
 # Usa o cliente para detectar as labels (camadas, o quão longe ele pode se aprofundar no reconhecimento)
 response = client.detect_labels(Image={'Bytes': source_bytes},
-                                MaxLabels=5,
-                                MinConfidence=95)
+                                MaxLabels=10,
+                                MinConfidence=90)
 
 # Verifica se há rostos na foto
 face_response = client.detect_faces(Image={'Bytes': source_bytes}, Attributes=["ALL"])
 has_face = False
 if len(face_response["FaceDetails"]) > 0:
     has_face = True
+
+if has_face:
+    # Detecta as emoções e expressões faciais
+    emotions_response = client.detect_faces(Image={'Bytes': source_bytes}, Attributes=['ALL'])
+    for face in emotions_response['FaceDetails']:
+        if 'Expressions' in face:
+            print(f"Detected emotion: {face['Emotions'][0]['Type']}, "
+                  f"Confidence: {face['Emotions'][0]['Confidence']:.2f}, "
+                  f"Detected facial expression: {face['Expressions'][0]['Type']}, "
+                  f"Confidence: {face['Expressions'][0]['Confidence']:.2f}")
+        else:
+            print("Não foram encontradas expressões faciais na foto.")
+else:
+    print("Não foram encontradas faces na foto.")
 
 
 # Imprime o resultado
@@ -52,6 +67,7 @@ except FileNotFoundError:
     worksheet.cell(row=1, column=2, value="Confidence (Confiança) em %")
     worksheet.cell(row=1, column=3, value="Detecção de rosto")
     worksheet.cell(row=1, column=4, value="Foto")
+    
 
 # Encontra a última linha com dados na planilha
 last_row = worksheet.max_row
@@ -67,8 +83,7 @@ for i, label in enumerate(response["Labels"]):
     row += 1
 
 
-
 # Salva o arquivo .xlsx
 print("Salvando o arquivo...")
 workbook.save("resultado.xlsx")
-
+print("Arquivo salvo com sucesso!")

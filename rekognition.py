@@ -11,15 +11,16 @@ with open('C:/Users/ezequ/Desktop/UNICARIOCA/1TCC/AWS/credentials.csv', 'r') as 
         access_key_id = line[2]
         secret_access_key = line[3]
 
-# Usa a foto
-photo = "C:/Users/ezequ/Desktop/UNICARIOCA/1TCC/AWS/rio.jfif"
 
-
-# Cria o cliente
+# Cria o cliente de acesso a API Rekognition da AWS
 client = boto3.client('rekognition',
                       aws_access_key_id=access_key_id,
                       aws_secret_access_key=secret_access_key,
                       region_name='us-east-1')
+
+# Usa a foto
+photo = "C:/Users/ezequ/Desktop/UNICARIOCA/1TCC/AWS/foto12.jfif"
+
 
 # Converte uma imagem em um array de bytes
 with open(photo, 'rb') as source_image:
@@ -35,20 +36,9 @@ face_response = client.detect_faces(Image={'Bytes': source_bytes}, Attributes=["
 has_face = False
 if len(face_response["FaceDetails"]) > 0:
     has_face = True
-
-if has_face:
-    # Detecta as emoções e expressões faciais
-    emotions_response = client.detect_faces(Image={'Bytes': source_bytes}, Attributes=['ALL'])
-    for face in emotions_response['FaceDetails']:
-        if 'Expressions' in face:
-            print(f"Detected emotion: {face['Emotions'][0]['Type']}, "
-                  f"Confidence: {face['Emotions'][0]['Confidence']:.2f}, "
-                  f"Detected facial expression: {face['Expressions'][0]['Type']}, "
-                  f"Confidence: {face['Expressions'][0]['Confidence']:.2f}")
-        else:
-            print("Não foram encontradas expressões faciais na foto.")
+    print("Foram encontrados rostos na foto.")
 else:
-    print("Não foram encontradas faces na foto.")
+    print("Não foram encontradas rostos na foto.")
 
 
 # Imprime o resultado
@@ -67,7 +57,7 @@ except FileNotFoundError:
     worksheet.cell(row=1, column=2, value="Confidence (Confiança) em %")
     worksheet.cell(row=1, column=3, value="Detecção de rosto")
     worksheet.cell(row=1, column=4, value="Foto")
-    
+
 
 # Encontra a última linha com dados na planilha
 last_row = worksheet.max_row

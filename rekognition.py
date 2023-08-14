@@ -4,7 +4,7 @@ import boto3
 import openpyxl
 
 # Cria um cliente da AWS lendo as credenciais do arquivo credentials.csv
-with open('C:/Users/ezequ/Desktop/UNICARIOCA/1TCC/AWS/credentials.csv', 'r') as input:
+with open('credentials.csv', 'r') as input:
     next(input)
     reader = csv.reader(input)
     for line in reader:
@@ -19,7 +19,7 @@ client = boto3.client('rekognition',
                       region_name='us-east-1')
 
 # Usa a foto
-photo = "C:/Users/ezequ/Desktop/UNICARIOCA/1TCC/AWS/foto12.jfif"
+photo = "foto12.jfif"
 
 
 # Converte uma imagem em um array de bytes

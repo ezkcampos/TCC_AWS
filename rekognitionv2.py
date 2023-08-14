@@ -4,7 +4,7 @@ import boto3
 import openpyxl
 
 # Cria um cliente da AWS lendo as credenciais do arquivo credentials.csv
-with open('C:/Users/ezequ/Desktop/UNICARIOCA/1TCC/AWS/credentials.csv', 'r') as input:
+with open('credentials.csv', 'r') as input:
     next(input)
     reader = csv.reader(input)
     for line in reader:
@@ -18,21 +18,21 @@ client = boto3.client('rekognition',
                       region_name='us-east-1')
 
 # Lista das fotos a serem processadas
-photo_list = ["C:/Users/ezequ/Desktop/UNICARIOCA/1TCC/AWS/foto1.jpg",
-              "C:/Users/ezequ/Desktop/UNICARIOCA/1TCC/AWS/foto2.jpg",
-              "C:/Users/ezequ/Desktop/UNICARIOCA/1TCC/AWS/foto3.jpg",
-              "C:/Users/ezequ/Desktop/UNICARIOCA/1TCC/AWS/foto4.jpg",
-              "C:/Users/ezequ/Desktop/UNICARIOCA/1TCC/AWS/foto5.jpg",
-              "C:/Users/ezequ/Desktop/UNICARIOCA/1TCC/AWS/foto6.jpg",
-              "C:/Users/ezequ/Desktop/UNICARIOCA/1TCC/AWS/foto7.jpeg",
-              "C:/Users/ezequ/Desktop/UNICARIOCA/1TCC/AWS/foto8.jpg",
-              "C:/Users/ezequ/Desktop/UNICARIOCA/1TCC/AWS/foto9.jpg",
-              "C:/Users/ezequ/Desktop/UNICARIOCA/1TCC/AWS/foto10.jpeg",
-              "C:/Users/ezequ/Desktop/UNICARIOCA/1TCC/AWS/foto11.jpg",
-              "C:/Users/ezequ/Desktop/UNICARIOCA/1TCC/AWS/foto12.jfif",
-              "C:/Users/ezequ/Desktop/UNICARIOCA/1TCC/AWS/foto13.jpg",
-              "C:/Users/ezequ/Desktop/UNICARIOCA/1TCC/AWS/foto14.jfif",
-              "C:/Users/ezequ/Desktop/UNICARIOCA/1TCC/AWS/foto15.jpg",]
+photo_list = ["foto1.jpg",
+              "foto2.jpg",
+              "foto3.jpg",
+              "foto4.jpg",
+              "foto5.jpg",
+              "foto6.jpg",
+              "foto7.jpeg",
+              "foto8.jpg",
+              "foto9.jpg",
+              "foto10.jpeg",
+              "foto11.jpg",
+              "foto12.jfif",
+              "foto13.jpg",
+              "foto14.jfif",
+              "foto15.jpg",]
 
 # Tenta abrir o arquivo .xlsx, cria um novo se não existir
 try:
